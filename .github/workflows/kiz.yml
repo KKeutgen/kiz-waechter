@@ -24,7 +24,7 @@ jobs:
           python-version: "3.12"
       - name: Waechter starten
         env:
-          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          NTFY_TOPIC: "kiz-wien-k7x92q"
           LAUFZEIT_MINUTEN: "350"
           TESTLAUF: ${{ github.event.inputs.testlauf == 'ja' && '1' || '0' }}
         run: python waechter.py
