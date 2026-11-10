@@ -1,0 +1,30 @@
+name: KIZ Ticket-Waechter
+
+on:
+  schedule:
+    - cron: "0 * * * *"      # stuendlich neu anstossen (jeder Lauf prueft ~6 Std. lang jede Minute)
+  workflow_dispatch:
+    inputs:
+      testlauf:
+        description: "Nur Test-Push senden (ja/nein)"
+        default: "nein"
+
+concurrency:
+  group: kiz-waechter
+  cancel-in-progress: false   # laufender Waechter wird nicht abgebrochen, der naechste wartet
+
+jobs:
+  waechter:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Waechter starten
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          LAUFZEIT_MINUTEN: "350"
+          TESTLAUF: ${{ github.event.inputs.testlauf == 'ja' && '1' || '0' }}
+        run: python waechter.py
